@@ -4,6 +4,7 @@ class Game {
     this.wordElement = container.querySelector('.word');
     this.winsElement = container.querySelector('.status__wins');
     this.lossElement = container.querySelector('.status__loss');
+    this.timer;
 
     this.reset();
 
@@ -38,6 +39,7 @@ class Game {
   }
 
   success() {
+    clearInterval(this.timer);
     if(this.currentSymbol.classList.contains("symbol_current")) this.currentSymbol.classList.remove("symbol_current");
     this.currentSymbol.classList.add('symbol_correct');
     this.currentSymbol = this.currentSymbol.nextElementSibling;
@@ -55,6 +57,7 @@ class Game {
   }
 
   fail() {
+    clearInterval(this.timer);
     if (++this.lossElement.textContent === 5) {
       alert('Вы проиграли!');
       this.reset();
@@ -66,6 +69,21 @@ class Game {
     const word = this.getWord();
 
     this.renderWord(word);
+
+    //Повышенный уровень сложности
+
+    let time = word.length;
+    document.getElementById('timer').textContent = time;
+    const that = this;
+    this.timer = setInterval(() => {
+      if (time <= 0) {
+        clearInterval(that.timer);
+        that.fail(); 
+      } else {
+        time--;
+        document.getElementById('timer').textContent = time;
+      } 
+    }, 1000);
   }
 
   getWord() {
@@ -101,4 +119,5 @@ class Game {
 }
 
 new Game(document.getElementById('game'))
+
 
