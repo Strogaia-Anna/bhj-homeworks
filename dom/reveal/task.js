@@ -2,15 +2,13 @@ let reveals = document.getElementsByClassName('reveal');
 
 document.addEventListener('scroll', function () {
     for (let reveal of reveals) {
-        let {top, bottom} = reveal.getBoundingClientRect();
-
-        if (bottom < 0) {
-           continue;
+        const { innerHeight } = window;
+        const { top } = reveal.getBoundingClientRect();
+        if (top < innerHeight && top > 0) {
+        reveal.classList.add("reveal_active");
+        } else {
+        reveal.classList.remove("reveal_active");
         }
-        if (top > window.innerHeight) {
-            continue;
-        }
-        reveal.classList.add('reveal_active');
     }
-
 })
+
