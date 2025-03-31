@@ -1,6 +1,15 @@
 body {
   font-family: Arial;
 }
+
+.cart {
+  display: none;
+}
+
+.cart__active {
+  display: block;
+}
+
 .cart__products {
   display: flex;
   justify-content: center;
@@ -9,11 +18,13 @@ body {
 
 .cart__product {
   position: relative;
+  width: 100px;
+  margin: 0 10px;
 }
 .cart__product-count {
   position: absolute;
   top: 0;
-  right: 0;
+  right: -10px;
   border: 2px solid green;
   border-radius: 50%;
   padding: 2px 5px;
@@ -26,6 +37,11 @@ body {
   height: 100px;
   object-fit: contain;
 }
+
+.deleteBtn {
+  width: 100px;
+}
+
 .product {
   display: flex;
   flex-wrap: wrap;
