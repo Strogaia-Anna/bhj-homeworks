@@ -6,10 +6,14 @@ for (let hasTooltip of hasTooltips) {
 
     function handler (event) {
         event.preventDefault();
-        hasTooltip.appendChild(tooltip);
-        // tooltip.setAttribute('data-position', 'bottom');
-        tooltip.textContent = hasTooltip.getAttribute('title');
-        tooltip.classList.add('tooltip_active');
+        if (tooltip.textContent !== hasTooltip.getAttribute('title')) {
+            let coordinates = hasTooltip.getBoundingClientRect();
+            tooltip.style.top = `${coordinates.top + 20}px`
+            tooltip.style.left = `${coordinates.x}px`
+            hasTooltip.after(tooltip);
+            tooltip.textContent = hasTooltip.getAttribute('title');
+        }
+        tooltip.classList.toggle('tooltip_active');
        
     }
 }
