@@ -12,8 +12,10 @@ for (let hasTooltip of hasTooltips) {
             tooltip.style.left = `${coordinates.x}px`
             hasTooltip.after(tooltip);
             tooltip.textContent = hasTooltip.getAttribute('title');
+            tooltip.classList.add('tooltip_active');
+        } else {
+            tooltip.classList.toggle('tooltip_active');
         }
-        tooltip.classList.toggle('tooltip_active');
-       
+              
     }
 }

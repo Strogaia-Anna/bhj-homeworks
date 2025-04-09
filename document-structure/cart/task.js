@@ -1,26 +1,45 @@
+function getElem (data) {
+    return `
+    <div class="cart__product" data-id="${data.id}">
+        <img class="cart__product-image" src="${data.imgSrc}">
+        <div class="cart__product-count">${data.count}</div>
+        <button class="delete-btn">Удалить</button>
+    </div>
+`;
+}
 let cart = document.getElementsByClassName('cart')[0];
+// коллекция продуктов
 let products = document.getElementsByClassName('product');
+// корзина
 let basket = document.getElementsByClassName('cart__products')[0];
+// коллекция товаров в корзине
 let cardProducts = document.getElementsByClassName('cart__product');
-for (let i = 0; i < localStorage.length; i++) {
-    let storedElement = localStorage.getItem(localStorage.key(i));
+let lSProducts = JSON.parse(localStorage.getItem('products')) || [];
+for (let i = 0; i < lSProducts.length; i++) {
+    let storedElementData = lSProducts[i];
+    let storedElement = getElem(storedElementData);
     basket.insertAdjacentHTML('afterBegin', storedElement);
     cart.classList.add('cart__active');
     let deleteBtn = cardProducts[0].getElementsByClassName('delete-btn')[0];
     deleteBtn.addEventListener('click', deleteButton)
         function deleteButton () {
             cardProducts[0].remove();
-            localStorage.removeItem(localStorage.key(i));
-                if (cardProducts.length === 0) {
-                    cart.classList.remove('cart__active');
-                }
+            lSProducts.splice(lSProducts.findIndex(sed => sed.id === storedElementData.id), 1);
+            localStorage.setItem('products', JSON.stringify(lSProducts));
+            if (cardProducts.length === 0) {
+                cart.classList.remove('cart__active');
+            }
         }
-
 }
+// цикл перебора всех продуктов в списке
 for (let product of products) {
+    // контроль конкретного продукта
     let item = product.getElementsByClassName('product__quantity-controls')[0];
+    // количество конкретного продукта
     let value = item.getElementsByClassName('product__quantity-value')[0];
+    // уменьшение количества продукта
     let dec = item.getElementsByClassName('product__quantity-control_dec')[0];
+    // увеличение количества продукта
     let inc = item.getElementsByClassName('product__quantity-control_inc')[0];
     dec.addEventListener('click', () => {
         if (+value.textContent > 1) {
@@ -32,38 +51,37 @@ for (let product of products) {
             value.textContent = +value.textContent + 1;
     });
     
-
     let btn = product.getElementsByClassName('product__add')[0];
     
     btn.addEventListener('click', handler);
     function handler () {
         let img = product.getElementsByClassName('product__image')[0];
+        // получение атрибута артикула (id)
         let pDataId = product.getAttribute('data-id');
         let finded = Array.from(cardProducts).find(it => it.getAttribute('data-id') === pDataId)
-        function getElem (dId, src, count) {
-            return `
-            <div class="cart__product" data-id="${dId}">
-                <img class="cart__product-image" src="${src}">
-                <div class="cart__product-count">${count}</div>
-                <button class="delete-btn">Удалить</button>
-            </div>
-        `;
-        }
+        
         let element;
+        let elementData = {
+            id: pDataId,
+            imgSrc: img.getAttribute('src')
+        };
         
         if (finded) {
             let cardProductCount = finded.getElementsByClassName('cart__product-count')[0];
             cardProductCount.textContent = +cardProductCount.textContent + +value.textContent;
-            element = getElem(pDataId, img.getAttribute('src'), cardProductCount.textContent);
+            elementData.count = +cardProductCount.textContent;
+            element = getElem(elementData);
         } else {
-            element = getElem(pDataId, img.getAttribute('src'), value.textContent);
+            elementData.count = +value.textContent;
+            element = getElem(elementData);
             basket.insertAdjacentHTML('afterBegin', element);
             let div = cardProducts[0];
             let remove = div.getElementsByClassName('delete-btn')[0];
             remove.addEventListener('click', deleteHandler);
             function deleteHandler () {
-                div.remove();
-                localStorage.removeItem(pDataId);
+                cardProducts[0].remove();
+                lSProducts.splice(lSProducts.findIndex(sed => sed.id === elementData.id), 1);
+                localStorage.setItem('products', JSON.stringify(lSProducts));
                 if (cardProducts.length === 0) {
                     cart.classList.remove('cart__active');
                 }
@@ -96,7 +114,13 @@ for (let product of products) {
             }
         }
         requestAnimationFrame(step);
-
-        localStorage.setItem(pDataId, element);
+        let elementDataIndex = lSProducts.findIndex(sed => sed.id === elementData.id);
+        if (elementDataIndex === -1) {
+            lSProducts.push(elementData);
+        } else {
+            lSProducts[elementDataIndex].count = elementData.count;
+        }
+        localStorage.setItem('products', JSON.stringify(lSProducts));
+        
     }
 }
